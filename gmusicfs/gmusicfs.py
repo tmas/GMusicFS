@@ -475,8 +475,7 @@ def main():
 
     fs = GMusicFS(mountpoint, true_file_size=args.true_file_size, verbose=verbosity, scan_library= not args.nolibrary)
     try:
-        fuse = FUSE(fs, mountpoint, foreground=args.foreground,
-                    ro=True, nothreads=True, allow_other=args.allusers)
+        fuse = FUSE(fs, mountpoint, foreground=args.foreground, ro=True, nothreads=True, allow_other=args.allusers)
     finally:
         fs.cleanup()
 
