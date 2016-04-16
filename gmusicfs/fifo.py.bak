@@ -3,9 +3,9 @@
 
 import threading
 try:
-    from io import StringIO
+    from cStringIO import StringIO
 except ImportError:
-    from io import StringIO
+    from StringIO import StringIO
 
 MAX_BUFFER = 1024**2*4
 

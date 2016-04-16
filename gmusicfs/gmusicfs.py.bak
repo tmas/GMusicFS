@@ -4,8 +4,8 @@ import os
 import re
 import sys
 import struct
-import urllib.request, urllib.error, urllib.parse
-import configparser
+import urllib2
+import ConfigParser
 from errno import ENOENT
 from stat import S_IFDIR, S_IFREG
 import time
@@ -20,7 +20,7 @@ from fuse import FUSE, FuseOSError, Operations, LoggingMixIn, fuse_get_context
 from gmusicapi import Mobileclient as GoogleMusicAPI
 from gmusicapi import Webclient as GoogleMusicWebAPI
 
-from . import fifo
+import fifo
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger('gmusicfs')
@@ -59,10 +59,10 @@ class Album(object):
         # Retrieve and remember the filesize of each track:
         if get_size and self.library.true_file_size:
             for t in self.__tracks:
-                if 'bytes' not in t:
-                    r = urllib.request.Request(self.get_track_stream(t)[0])
+                if not t.has_key('bytes'):
+                    r = urllib2.Request(self.get_track_stream(t)[0])
                     r.get_method = lambda: 'HEAD'
-                    u = urllib.request.urlopen(r)
+                    u = urllib2.urlopen(r)
                     t['bytes'] = int(u.headers['Content-Length']) + ID3V1_TRAILER_SIZE
         return self.__tracks
 
@@ -93,9 +93,9 @@ class Album(object):
     def get_cover_size(self):
         'Get the album cover size'	
 	if self.library.true_file_size:
-	    r = urllib.request.Request(self.get_cover_url())
+	    r = urllib2.Request(self.get_cover_url())
 	    r.get_method = lambda: 'HEAD'
-	    u = urllib.request.urlopen(r)
+	    u = urllib2.urlopen(r)
 	    return int(u.headers['Content-Length'])
 	return None
 	    
@@ -109,7 +109,7 @@ class Album(object):
             if y:
                 count = years.get(y, 0)
                 years[y] = count + 1
-        top_years = sorted(list(years.items()),
+        top_years = sorted(years.items(),
                            key=operator.itemgetter(1), reverse=True)
         try:
             top_year = top_years[0][0]
@@ -118,7 +118,7 @@ class Album(object):
         return top_year
 
     def __repr__(self):
-        return '<Album \'{title}\'>'.format(title=self.normtitle)
+        return u'<Album \'{title}\'>'.format(title=self.normtitle)
 
 class MusicLibrary(object):
     'Read information about your Google Music library'
@@ -156,7 +156,7 @@ class MusicLibrary(object):
                 raise NoCredentialException(
                     'Config file is not protected. Please run: '
                     'chmod 600 %s' % cred_path)
-            self.config = configparser.ConfigParser()
+            self.config = ConfigParser.ConfigParser()
             self.config.read(cred_path)
             username = self.config.get('credentials','username')
             password = self.config.get('credentials','password')
@@ -252,7 +252,7 @@ class GMusicFS(LoggingMixIn, Operations):
 
         # Default to a directory
         st = {
-            'st_mode' : (S_IFDIR | 0o755),
+            'st_mode' : (S_IFDIR | 0755),
             'st_nlink' : 2 }
         date = 0 # Make the date really old, so that cp -u works correctly.
         st['st_ctime'] = st['st_mtime'] = st['st_atime'] = date
@@ -271,7 +271,7 @@ class GMusicFS(LoggingMixIn, Operations):
                 parts['artist']][parts['album']]
             track = album.get_track(parts['track'])
             st = {
-                'st_mode' : (S_IFREG | 0o444),
+                'st_mode' : (S_IFREG | 0444),
                 'st_size' : int(track['estimatedSize']),
                 'st_ctime' : int(track['creationTimestamp']) / 1000000,
                 'st_mtime' : int(track['creationTimestamp']) / 1000000,
@@ -284,7 +284,7 @@ class GMusicFS(LoggingMixIn, Operations):
             if cover_size is None:
             	cover_size = 10000000
             st = {
-                'st_mode' : (S_IFREG | 0o444),
+                'st_mode' : (S_IFREG | 0444),
                 'st_size' : cover_size }
         else:
             raise FuseOSError(ENOENT)
@@ -309,7 +309,7 @@ class GMusicFS(LoggingMixIn, Operations):
         else:
             RuntimeError('unexpected opening of path: %r' % path)
 
-        u = self.__open_files[fh] = urllib.request.urlopen(url)
+        u = self.__open_files[fh] = urllib2.urlopen(url)
         u.bytes_read = 0
 
         return fh
@@ -355,14 +355,14 @@ class GMusicFS(LoggingMixIn, Operations):
         if path == '/':
             return ['.', '..', 'artists']
         elif path == '/artists':
-            return  ['.','..'] + list(self.library.get_artists().keys())
+            return  ['.','..'] + self.library.get_artists().keys()
         elif artist_dir_m:
             # Artist directory, lists albums.
             albums = self.library.get_artist_albums(
                 artist_dir_m.groupdict()['artist'])
             # Sort albums by year:
-            album_dirs = ['{year:04d} - {name}'.format(
-                year=a.get_year(), name=formatNames(a.normtitle)) for a in list(albums.values())]
+            album_dirs = [u'{year:04d} - {name}'.format(
+                year=a.get_year(), name=formatNames(a.normtitle)) for a in albums.values()]
             return ['.','..'] + album_dirs
         elif artist_album_dir_m:
             # Album directory, lists tracks.
@@ -391,7 +391,7 @@ def getDeviceId(verbose=False):
         raise NoCredentialException(
             'Config file is not protected. Please run: '
             'chmod 600 %s' % cred_path)
-    config = configparser.ConfigParser()
+    config = ConfigParser.ConfigParser()
     config.read(cred_path)
     username = config.get('credentials','username')
     password = config.get('credentials','password')
@@ -409,7 +409,7 @@ def getDeviceId(verbose=False):
         if not device['name']:
             device['name']='NoName'
         if device['id'][1]=='x':
-            print('%s : %s' % (device['name'], device['id']))
+            print '%s : %s' % (device['name'], device['id'])
 
 def main():
     log.setLevel(logging.WARNING)
