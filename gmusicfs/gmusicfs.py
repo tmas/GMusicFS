@@ -89,16 +89,16 @@ class Album(object):
         except:
             url = None
         return url
-        
+
     def get_cover_size(self):
-        'Get the album cover size'	
-	if self.library.true_file_size:
-	    r = urllib.request.Request(self.get_cover_url())
-	    r.get_method = lambda: 'HEAD'
-	    u = urllib.request.urlopen(r)
-	    return int(u.headers['Content-Length'])
-	return None
-	    
+        'Get the album cover size'
+        if self.library.true_file_size:
+            r = urllib.request.Request(self.get_cover_url())
+            r.get_method = lambda: 'HEAD'
+            u = urllib.request.urlopen(r)
+            return int(u.headers['Content-Length'])
+        return None
+
     def get_year(self):
         """Get the year of the album.
         Aggregate all the track years and pick the most popular year
@@ -282,7 +282,7 @@ class GMusicFS(LoggingMixIn, Operations):
                 parts['artist']][parts['album']]
             cover_size = album.get_cover_size()
             if cover_size is None:
-            	cover_size = 10000000
+                cover_size = 10000000
             st = {
                 'st_mode' : (S_IFREG | 0o444),
                 'st_size' : cover_size }
@@ -333,11 +333,11 @@ class GMusicFS(LoggingMixIn, Operations):
             track = album.get_track(parts['track'])
             # Genre tag is always set to Other as Google MP3 genre tags are not id3v1 id.
             id3v1 = struct.pack("!3s30s30s30s4s30sb", 'TAG', str(track['title']), str(track['artist']),
-        	                str(track.get('album','')), str(0), str(track.get('comment','')), 12)
+                                str(track.get('album','')), str(0), str(track.get('comment','')), 12)
             buf = u.read(size - ID3V1_TRAILER_SIZE) + id3v1
         else:
             buf = u.read(size)
-            
+
         try:
             u.bytes_read += size
         except AttributeError:
