@@ -15,7 +15,7 @@ setup(
     description = 'A FUSE filesystem for Google Music',
     author = 'Ryan McGuire',
     author_email = 'ryan@enigmacurry.com',
-    url = 'http://github.com/EnigmaCurry/GMusicFS',
+    url = 'http://github.com/tmas/GMusicFS',
     license = 'MIT',
     install_requires = install_requires,
     zip_safe=False,
