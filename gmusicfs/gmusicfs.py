@@ -364,6 +364,7 @@ class GMusicFS(LoggingMixIn, Operations):
             # Sort albums by year:
             album_dirs = ['{year:04d} - {name}'.format(
                 year=a.get_year(), name=formatNames(a.normtitle)) for a in list(albums.values())]
+            log.debug('len(album_dirs): ' + len(album_dirs))
             return ['.','..'] + album_dirs
         elif artist_album_dir_m:
             # Album directory, lists tracks.
