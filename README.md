@@ -61,7 +61,7 @@ pip install https://github.com/simon-weber/Unofficial-Google-Music-API/tarball/d
 Then install GMusicFS:
 
 ```
-pip install https://github.com/EnigmaCurry/GMusicFS/tarball/master
+pip install https://github.com/tmas/GMusicFS/tarball/master
 ```
 
 
