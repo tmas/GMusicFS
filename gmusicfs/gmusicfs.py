@@ -334,8 +334,8 @@ class GMusicFS(LoggingMixIn, Operations):
                 parts['artist']][parts['album']]
             track = album.get_track(parts['track'])
             # Genre tag is always set to Other as Google MP3 genre tags are not id3v1 id.
-            id3v1 = struct.pack("!3s30s30s30s4s30sb", b'TAG', str(track['title']), str(track['artist']),
-                                str(track.get('album','')), str(0), str(track.get('comment','')), 12)
+            id3v1 = struct.pack("!3s30s30s30s4s30sb".encode("utf-8"), b'TAG', str(track['title']).encode("utf-8"), str(track['artist']).encode("utf-8"),
+                                str(track.get('album','')).encode("utf-8"), str(0).encode("utf-8"), str(track.get('comment','')).encode("utf-8"), 12)
             buf = u.read(size - ID3V1_TRAILER_SIZE) + id3v1
         else:
             buf = u.read(size)
