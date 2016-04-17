@@ -53,6 +53,7 @@ class Album(object):
         self.__sorted = False
 
     def get_tracks(self, get_size=False):
+        log.debug("len(__tracks): " + str(len(self.__tracks)))
         # Re-sort by track number:
         if not self.__sorted:
             self.__tracks.sort(key=lambda t: t.get('track'))
