@@ -56,7 +56,7 @@ class Album(object):
         log.debug("len(__tracks): " + str(len(self.__tracks)))
         # Re-sort by track number:
         if not self.__sorted:
-            self.__tracks.sort(key=lambda t: t.get('track'))
+            self.__tracks.sort(key=lambda t: t.get('title'))
         # Retrieve and remember the filesize of each track:
         if get_size and self.library.true_file_size:
             for t in self.__tracks:
@@ -365,7 +365,7 @@ class GMusicFS(LoggingMixIn, Operations):
             # Sort albums by year:
             album_dirs = ['{year:04d} - {name}'.format(
                 year=a.get_year(), name=formatNames(a.normtitle)) for a in list(albums.values())]
-            log.debug('len(album_dirs): ' + len(album_dirs))
+            log.debug('len(album_dirs): ' + str(len(album_dirs)))
             return ['.','..'] + album_dirs
         elif artist_album_dir_m:
             # Album directory, lists tracks.
