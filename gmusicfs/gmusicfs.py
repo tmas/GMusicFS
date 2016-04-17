@@ -182,7 +182,7 @@ class MusicLibrary(object):
         log.info('Gathering track information...')
         tracks = self.api.get_all_songs()
         for track in tracks:
-            log.debug('processing a track! title: ' + title)
+            log.debug('processing a track! title: ' + track['title'])
             # Prefer the album artist over the track artist if there is one:
             artist = formatNames(track['albumArtist'].lower())
             if artist.strip() == '':
