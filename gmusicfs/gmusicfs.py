@@ -129,7 +129,7 @@ class MusicLibrary(object):
         if verbose > 1:
             self.verbose = True
 
-        self.__login_and_setup(username, password)
+        self.__login_and_setup()
 
         self.__artists = {} # 'artist name' -> {'album name' : Album(), ...}
         self.__albums = [] # [Album(), ...]
